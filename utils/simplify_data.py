@@ -69,9 +69,9 @@ VALID_NUTRISCORES = {"a", "b", "c", "d", "e"}
 
 
 # Dossier data/ voisin du dossier du script (résolu depuis le script, pas depuis le cwd)
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
-DEFAULT_SOURCE = DATA_DIR / "en.openfoodfacts.org.products.csv.gz"
-DEFAULT_OUTPUT = DATA_DIR / "data.csv"
+PROJECT_DIR = Path(__file__).resolve().parent.parent
+DEFAULT_SOURCE = PROJECT_DIR / "data" / "en.openfoodfacts.org.products.csv.gz"
+DEFAULT_OUTPUT = PROJECT_DIR / "public" / "data" / "data.csv"
 
 
 def parse_args():
