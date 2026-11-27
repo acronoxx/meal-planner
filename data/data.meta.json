@@ -1,7 +1,7 @@
 {
  "source": "Open Food Facts — https://world.openfoodfacts.org/data",
  "license": "ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
- "generatedAt": "2026-11-26T18:39:07+00:00",
+ "generatedAt": "2026-11-27T10:14:54+00:00",
  "units": {
   "kcal": "kcal/100g",
   "default": "g/100g"
@@ -20,13 +20,14 @@
   "excludedGroups": [
    "Baby foods"
   ],
-  "sampling": "quota égal par group, produits les plus scannés (unique_scans_n)"
+  "limit": null,
+  "sampling": "aucun (tous les produits valides)"
  },
  "stats": {
   "lines": 4929745,
   "country": 1300795,
   "valid": 448139,
   "rejected_incoherent": 895,
-  "kept": 2000
+  "kept": 367051
  }
 }

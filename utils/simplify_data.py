@@ -14,6 +14,7 @@ Usage :
     python3 extract_off.py                       # entrée et sortie par défaut dans ../data
     python3 extract_off.py -o ../data/data.json  # sortie JSON (meta incluse)
     python3 extract_off.py autre_export.csv.gz   # autre fichier d'entrée
+    python3 extract_off.py --limit 3000          # échantillon de 3000 produits (défaut : pas de limite)
     python3 extract_off.py export.csv.gz --limit 3000 --country en:france --exclude "Baby foods"
 
 Principe :
@@ -21,7 +22,8 @@ Principe :
   2. Filtre : pays, nom présent, nutriments obligatoires présents et cohérents,
      catégorie PNNS connue, groupes exclus.
   3. Dédoublonnage par code-barres et par (nom, marque).
-  4. Échantillonnage équilibré : même quota par groupe PNNS de niveau 1,
+  4. Sans --limit : tous les produits valides sont gardés.
+     Avec --limit N : échantillonnage équilibré, même quota par groupe PNNS de niveau 1,
      en gardant dans chaque groupe les produits les plus scannés (unique_scans_n).
 """
 
@@ -79,7 +81,8 @@ def parse_args():
     p.add_argument("-o", "--output", default=str(DEFAULT_OUTPUT),
                     help=f"Sortie .csv (+ .meta.json à côté) ou .json (défaut : {DEFAULT_OUTPUT})")
     p.add_argument("--country", default="en:france", help="Tag pays à garder (défaut : en:france, vide = tous)")
-    p.add_argument("--limit", type=int, default=2000, help="Nombre total de produits (défaut : 2000)")
+    p.add_argument("--limit", type=int, default=0,
+                    help="Nombre total de produits (défaut : 0 = pas de limite)")
     p.add_argument("--exclude", action="append", default=["Baby foods"],
                     help="Groupe PNNS 1 à exclure (répétable, défaut : 'Baby foods')")
     p.add_argument("--require-fiber", action="store_true", help="Exiger aussi les fibres")
@@ -134,7 +137,8 @@ def main():
 
     # Un tas min par groupe PNNS 1 : on garde les produits les plus scannés.
     # On en garde plus que le quota final pour pouvoir dédoublonner ensuite.
-    per_group_keep = max(args.limit, 1)
+    unlimited = args.limit <= 0
+    per_group_keep = None if unlimited else args.limit
     heaps = {}
     counter = 0  # départage les égalités dans le tas (évite de comparer des dict)
     stats = {"lines": 0, "country": 0, "valid": 0, "rejected_incoherent": 0}
@@ -197,14 +201,14 @@ def main():
             heap = heaps.setdefault(pnns1, [])
             counter += 1
             item = (scans, counter, food)
-            if len(heap) < per_group_keep:
+            if per_group_keep is None or len(heap) < per_group_keep:
                 heapq.heappush(heap, item)
             elif scans > heap[0][0]:
                 heapq.heapreplace(heap, item)
 
     # Dédoublonnage + quota équilibré par groupe
     groups = sorted(heaps)
-    quota = args.limit // max(len(groups), 1)
+    quota = float("inf") if unlimited else args.limit // max(len(groups), 1)
     seen_ids, seen_names = set(), set()
     foods, leftovers = [], []
     for g in groups:
@@ -220,8 +224,9 @@ def main():
             else:
                 leftovers.append((scans, food))
     # Les places restantes (groupes trop petits, reste de la division) vont aux plus scannés
-    leftovers.sort(key=lambda t: -t[0])
-    foods += [f for _, f in leftovers[: max(args.limit - len(foods), 0)]]
+    if not unlimited:
+        leftovers.sort(key=lambda t: -t[0])
+        foods += [f for _, f in leftovers[: max(args.limit - len(foods), 0)]]
     foods.sort(key=lambda f: (f["group"], f["subgroup"], f["name"].casefold()))
 
     out = {
@@ -235,7 +240,9 @@ def main():
                 "requiredNutrients": list(REQUIRED_NUTRIENTS),
                 "requireFiber": args.require_fiber,
                 "excludedGroups": sorted(excluded),
-                "sampling": "quota égal par group, produits les plus scannés (unique_scans_n)",
+                "limit": None if unlimited else args.limit,
+                "sampling": "aucun (tous les produits valides)" if unlimited
+                            else "quota égal par group, produits les plus scannés (unique_scans_n)",
             },
             "stats": {**stats, "kept": len(foods)},
         },
