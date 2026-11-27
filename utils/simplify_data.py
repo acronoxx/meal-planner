@@ -273,7 +273,7 @@ def main():
     by_group = {}
     for food in foods:
         by_group[food["group"]] = by_group.get(food["group"], 0) + 1
-    print("Par groupe :", json.dumps(by_group, ensure_ascii=False, indent=1), file=sys.stderr)
+    print("Par groupe :", json.dumps(by_group, ensure_ascii=False, indents=1), file=sys.stderr)
 
 
 if __name__ == "__main__":
