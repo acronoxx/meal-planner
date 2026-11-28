@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #c7cec6 transparent;
+  }
+
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  button {
+    cursor: pointer;
+  }
+}
+
+.calendar-scroll {
+  scrollbar-gutter: stable;
+}
+
+.calendar-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.calendar-scroll::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background-clip: content-box;
+  background-color: #bcc5bc;
+}
+
+.figma-custom-code-fragment {
+  display: contents;
+}
+
+.figma-bypass-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 2147483647;
+  transform: translateY(-150%);
+  border-radius: 6px;
+  background: #111827;
+  color: #fff;
+  padding: 8px 12px;
+  font: 600 14px/1.2 system-ui, sans-serif;
+  text-decoration: none;
+}
+
+.figma-bypass-link:focus {
+  transform: translateY(0);
+}

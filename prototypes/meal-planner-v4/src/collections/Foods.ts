@@ -1,0 +1,146 @@
+import type { Access, CollectionConfig } from 'payload'
+
+const isPayloadAdmin: Access = ({ req }) => req.user?.collection === 'admins'
+
+export const Foods: CollectionConfig = {
+  slug: 'foods',
+  access: {
+    create: isPayloadAdmin,
+    delete: isPayloadAdmin,
+    read: () => true,
+    update: isPayloadAdmin,
+  },
+  admin: {
+    group: 'Nutrition',
+    useAsTitle: 'name',
+    defaultColumns: ['name', 'category', 'datasetSource', 'calories'],
+  },
+  fields: [
+    {
+      name: 'name',
+      type: 'text',
+      required: true,
+    },
+    {
+      name: 'fdcId',
+      label: 'Source ID (USDA FDC or barcode)',
+      type: 'text',
+      required: true,
+      unique: true,
+      index: true,
+    },
+    {
+      name: 'datasetSource',
+      label: 'USDA dataset',
+      type: 'select',
+      required: true,
+      options: [
+        { label: 'Foundation Foods', value: 'foundation' },
+        { label: 'SR Legacy', value: 'sr-legacy' },
+        { label: 'FNDDS', value: 'fndds' },
+        { label: 'Open Food Facts', value: 'open-food-facts' },
+      ],
+    },
+    {
+      name: 'brand',
+      label: 'Brand',
+      type: 'text',
+    },
+    {
+      name: 'emoji',
+      label: 'Emoji',
+      type: 'text',
+      admin: {
+        description: 'Single emoji used in the meal planner.',
+      },
+    },
+    {
+      name: 'category',
+      type: 'select',
+      required: true,
+      options: [
+        { label: 'Fruits', value: 'fruit' },
+        { label: 'Vegetables', value: 'vegetable' },
+        { label: 'Proteins', value: 'protein' },
+        { label: 'Cereals', value: 'grain' },
+        { label: 'Dairy', value: 'dairy' },
+        { label: 'Drinks', value: 'drink' },
+        { label: 'Snacks', value: 'snack' },
+        { label: 'Prepared meals', value: 'meal' },
+        { label: 'Fats and sauces', value: 'sauce' },
+      ],
+    },
+    {
+      name: 'servingSize',
+      type: 'number',
+      required: true,
+      min: 0,
+      admin: { step: 0.1 },
+    },
+    {
+      name: 'servingUnit',
+      type: 'select',
+      required: true,
+      options: [
+        { label: 'grams', value: 'g' },
+        { label: 'millilitres', value: 'ml' },
+      ],
+    },
+    {
+      name: 'calories',
+      label: 'Calories (kcal / 100 g or ml)',
+      type: 'number',
+      required: true,
+      min: 0,
+      admin: { step: 0.1 },
+    },
+    {
+      name: 'protein',
+      label: 'Protein (g)',
+      type: 'number',
+      required: true,
+      min: 0,
+      admin: { step: 0.1 },
+    },
+    {
+      name: 'carbs',
+      label: 'Carbohydrates (g)',
+      type: 'number',
+      required: true,
+      min: 0,
+      admin: { step: 0.1 },
+    },
+    {
+      name: 'fat',
+      label: 'Fat (g)',
+      type: 'number',
+      required: true,
+      min: 0,
+      admin: { step: 0.1 },
+    },
+    {
+      name: 'fiber',
+      label: 'Fiber (g)',
+      type: 'number',
+      required: true,
+      min: 0,
+      admin: { step: 0.1 },
+    },
+    {
+      name: 'sugar',
+      label: 'Sugar (g)',
+      type: 'number',
+      required: true,
+      min: 0,
+      admin: { step: 0.1 },
+    },
+    {
+      name: 'sodium',
+      label: 'Sodium (mg)',
+      type: 'number',
+      required: true,
+      min: 0,
+      admin: { step: 0.1 },
+    },
+  ],
+}
