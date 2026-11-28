@@ -69,9 +69,9 @@ VALID_NUTRISCORES = {"a", "b", "c", "d", "e"}
 
 
 # Dossier data/ voisin du dossier du script (résolu depuis le script, pas depuis le cwd)
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
-DEFAULT_SOURCE = DATA_DIR / "en.openfoodfacts.org.products.csv.gz"
-DEFAULT_OUTPUT = DATA_DIR / "data.csv"
+PROJECT_DIR = Path(__file__).resolve().parent.parent
+DEFAULT_SOURCE = PROJECT_DIR / "data" / "en.openfoodfacts.org.products.csv.gz"
+DEFAULT_OUTPUT = PROJECT_DIR / "public" / "data" / "data.csv"
 
 
 def parse_args():
@@ -273,7 +273,7 @@ def main():
     by_group = {}
     for food in foods:
         by_group[food["group"]] = by_group.get(food["group"], 0) + 1
-    print("Par groupe :", json.dumps(by_group, ensure_ascii=False, indent=1), file=sys.stderr)
+    print("Par groupe :", json.dumps(by_group, ensure_ascii=False, indents=1), file=sys.stderr)
 
 
 if __name__ == "__main__":
